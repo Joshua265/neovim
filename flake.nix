@@ -19,6 +19,11 @@
     neovim,
     telescope-recent-files-src,
   }: let
+    pkgs = import nixpkgs {
+      system = "x86_64-linux";
+      config.allowUnfree = true;
+      overlays = [overlayFlakeInputs overlayCustomNeovim];
+    };
     overlayFlakeInputs = prev: final: {
       neovim = neovim.packages.x86_64-linux.neovim;
 
@@ -34,13 +39,8 @@
 
     overlayCustomNeovim = prev: final: {
       customNeovim = import ./packages/customNeovim.nix {
-        pkgs = final;
+        pkgs = pkgs;
       };
-    };
-
-    pkgs = import nixpkgs {
-      system = "x86_64-linux";
-      overlays = [overlayFlakeInputs overlayCustomNeovim];
     };
   in {
     packages.x86_64-linux.default = pkgs.customNeovim;
