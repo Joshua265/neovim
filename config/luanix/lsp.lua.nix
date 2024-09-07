@@ -1,39 +1,62 @@
+# vim: ft=lua
+{
+  pkgs
+}:
+''
 
-  local lsp = require("lsp-zero")
+
+local lsp = require("lsp-zero")
 
 lsp.preset("recommended")
 
 require('mason').setup({})
-require('mason-lspconfig').setup({
-  -- Replace the language servers listed here
-  -- with the ones you want to install
-  ensure_installed = {'ts_ls', 'rust_analyzer', 'eslint', 'html', 'jsonls', 'lua_ls', 'markdown_oxide', 'nextls', 'nixd', 'pyright', 'terraform_lsp', 'terraformls'};
-  handlers = {
-    function(server_name)
-      require('lspconfig')[server_name].setup({})
-    end,
-  }
+local nvim_lsp = require("mason-lspconfig")
+nvim_lsp.tsserver.setup({
+  init_options = {
+    tsserver = {
+      path = "${pkgs.nodePackages.typescript}/lib/node_modules/typescript/lib",
+    },
+  },
 })
 
-lspconfig.eslint.setup({
-  on_attach = function(client, bufnr)
-    vim.api.nvim_create_autocmd("BufWritePre", {
-      buffer = bufnr,
-      command = "EslintFixAll",
-    })
-  end,
+nvim_lsp.rust_analyzer.setup({})
+
+nvim_lsp.eslint.setup({
+  init_options = {
+    nodePath = "${pkgs.nodejs_20}/bin/node",
+  },
 })
 
--- Fix Undefined global 'vim'
-lsp.configure('lua_ls', {
-    settings = {
-        Lua = {
-            diagnostics = {
-                globals = { 'vim' }
-            }
-        }
-    }
+nvim_lsp.html.setup({
+  init_options = {
+    nodePath = "${pkgs.nodejs_20}/bin/node",
+  },
 })
+
+nvim_lsp.jsonls.setup({
+  init_options = {
+    nodePath = "${pkgs.nodejs_20}/bin/node",
+  },
+})
+
+nvim_lsp.lua_ls.setup({
+  cmd = { "${pkgs.lua-language-server}/bin/lua-language-server" },
+})
+
+nvim_lsp.nixd.setup({
+  cmd = { "${pkgs.nixd}/bin/nixd" },
+})
+
+#require('mason-lspconfig').setup({
+#  -- Replace the language servers listed here
+#  -- with the ones you want to install
+#  ensure_installed = {'ts_ls', 'rust_analyzer', 'eslint', 'html', 'jsonls', 'lua_ls', 'markdown_oxide', 'nextls', 'nixd', 'pyright', 'terraformls'};
+#  handlers = {
+#    function(server_name)
+#      require('lspconfig')[server_name].setup({})
+#    end,
+#  }
+#})
 
 
 local cmp = require('cmp')
@@ -85,6 +108,8 @@ lsp.set_preferences({
 lsp.on_attach(function(client, bufnr)
   local opts = {buffer = bufnr, remap = false}
 
+  lsp.buffer_autoformat()
+
   vim.keymap.set("n", "gd", function() vim.lsp.buf.definition() end, opts)
   vim.keymap.set("n", "K", function() vim.lsp.buf.hover() end, opts)
   vim.keymap.set("n", "<leader>vws", function() vim.lsp.buf.workspace_symbol() end, opts)
@@ -103,3 +128,4 @@ vim.diagnostic.config({
     virtual_text = true
 })
 
+''
