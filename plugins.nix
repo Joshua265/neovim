@@ -1,14 +1,21 @@
 {pkgs}:
 with pkgs.vimPlugins; [
+  cyberdream-nvim
   telescope-nvim
   telescope-recent-files
-  nvim-treesitter
   undotree
   vim-fugitive
   nvim-lspconfig
   lsp-zero-nvim
   nvim-cmp
-  mason-nvim
-  mason-lspconfig-nvim
-  copilot-vim
-]
+  cmp-buffer
+  cmp-nvim-lsp
+  cmp-nvim-lua
+  cmp-path
+  cmp_luasnip
+  luasnip
+  copilot-lua
+  copilot-cmp
+  lspkind-nvim
+  nvim-treesitter.withAllGrammars
+] 

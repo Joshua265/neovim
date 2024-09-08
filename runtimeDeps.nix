@@ -4,6 +4,7 @@
     nodePackages.typescript
     nodePackages.typescript-language-server
     eslint
+
     vscode-langservers-extracted
     nixd
   ];

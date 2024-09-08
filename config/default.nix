@@ -31,7 +31,7 @@
 
   vim = scripts2ConfigFiles "vim";
   lua = scripts2ConfigFiles "lua";
-  # luanix = nixFiles2ConfigFiles "luanix";
+  luanix = nixFiles2ConfigFiles "luanix";
 in
   builtins.concatStringsSep "\n"
-  (builtins.map (configs: sourceConfigFiles configs) [vim lua])
+  (builtins.map (configs: sourceConfigFiles configs) [vim lua luanix])

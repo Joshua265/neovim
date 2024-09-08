@@ -4,13 +4,12 @@
 }:
 ''
 
-
 local lsp = require("lsp-zero")
 
 lsp.preset("recommended")
 
-require('mason').setup({})
-local nvim_lsp = require("mason-lspconfig")
+local nvim_lsp = require("lspconfig")
+
 nvim_lsp.tsserver.setup({
   init_options = {
     tsserver = {
@@ -19,13 +18,7 @@ nvim_lsp.tsserver.setup({
   },
 })
 
-nvim_lsp.rust_analyzer.setup({})
-
-nvim_lsp.eslint.setup({
-  init_options = {
-    nodePath = "${pkgs.nodejs_20}/bin/node",
-  },
-})
+nvim_lsp.rust_analyzer.setup{}
 
 nvim_lsp.html.setup({
   init_options = {
@@ -33,67 +26,39 @@ nvim_lsp.html.setup({
   },
 })
 
-nvim_lsp.jsonls.setup({
+nvim_lsp.jsonls.setup{
   init_options = {
     nodePath = "${pkgs.nodejs_20}/bin/node",
   },
-})
+}
 
-nvim_lsp.lua_ls.setup({
+nvim_lsp.lua_ls.setup{
   cmd = { "${pkgs.lua-language-server}/bin/lua-language-server" },
-})
-
-nvim_lsp.nixd.setup({
-  cmd = { "${pkgs.nixd}/bin/nixd" },
-})
-
-#require('mason-lspconfig').setup({
-#  -- Replace the language servers listed here
-#  -- with the ones you want to install
-#  ensure_installed = {'ts_ls', 'rust_analyzer', 'eslint', 'html', 'jsonls', 'lua_ls', 'markdown_oxide', 'nextls', 'nixd', 'pyright', 'terraformls'};
-#  handlers = {
-#    function(server_name)
-#      require('lspconfig')[server_name].setup({})
-#    end,
-#  }
-#})
-
-
-local cmp = require('cmp')
-local cmp_select = {behavior = cmp.SelectBehavior.Select}
-local cmp_mappings = lsp.defaults.cmp_mappings({
-  ['<CR>'] = cmp.mapping.confirm({
-      -- documentation says this is important.
-      -- I don't know why.
-      behavior = cmp.ConfirmBehavior.Replace,
-      select = false,
-    }),
-  ['<C-p>'] = cmp.mapping.select_prev_item(cmp_select),
-  ['<C-n>'] = cmp.mapping.select_next_item(cmp_select),
-  ['<C-y>'] = cmp.mapping.confirm({ select = true }),
-  ["<C-Space>"] = cmp.mapping.complete(),
-})
-
-cmp_mappings['<Tab>'] = nil
-cmp_mappings['<S-Tab>'] = nil
-
-cmp.setup({
-  mapping = cmp_mappings,
-  sources = {
-    { name = 'nvim_lsp' },
-    { name = 'copilot' },
-    { name = 'buffer' },
+  settings = {
+    Lua = {
+      runtime = {
+        version = "LuaJIT",
+        path = vim.split(package.path, ';'),
+      },
+      diagnostics = {
+        globals = { "vim" },
+      },
+      workspace = {
+        library = vim.api.nvim_get_runtime_file("", true),
+      },
+      telemetry = {
+        enable = false,
+      },
+    },
   },
-  completion = {
-    completeopt = 'menu,menuone,noinsert',
-  },
-  formatting = {
-    format = function(entry, vim_item)
-      vim_item.kind = lsp.kind_icons[vim_item.kind]
-      return vim_item
-    end
   }
-});
+
+
+nvim_lsp.nixd.setup{
+  cmd = { "${pkgs.nixd}/bin/nixd" },
+}
+
+lsp.format_on_save()
 
 lsp.set_preferences({
     suggest_lsp_servers = false,
